@@ -1,0 +1,50 @@
+name: Generate Salesforce SARIF
+
+on:
+  workflow_dispatch:
+    inputs:
+      repo:
+        type: choice
+        description: "Choose a Salesforce repo to scan"
+        options:
+          - trailheadapps/apex-recipes
+          - trailheadapps/lwc-recipes
+          - trailheadapps/dreamhouse-lwc
+          - apex-enterprise-patterns/fflib-apex-common
+          - jongpie/NebulaLogger
+        required: true
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout this tool
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Enable pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@9.0.0 --activate
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Clone Salesforce repo
+        run: |
+          git clone https://github.com/${{ inputs.repo }} repo-to-scan
+
+      - name: Run Salesforce scan
+        run: |
+          pnpm exec sales-force-scan-2-sarif scan repo-to-scan/force-app sarif-output
+
+      - name: Upload SARIF artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: salesforce-scan-${{ inputs.repo }}
+          path: sarif-output/salesforce-unified.sarif
