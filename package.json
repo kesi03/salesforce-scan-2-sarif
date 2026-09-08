@@ -1,6 +1,6 @@
 {
   "name": "@mockholm/sales-force-scan-2-sarif",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "type": "module",
   "bin": {
     "sales-force-scan-2-sarif": "./src/cli.ts"
