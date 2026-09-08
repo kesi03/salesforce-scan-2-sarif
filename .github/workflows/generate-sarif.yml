@@ -27,10 +27,21 @@ jobs:
         with:
           node-version: '20'
 
+      # ---------------------------------------------------------
+      # Enable pnpm and configure global bin directory
+      # ---------------------------------------------------------
       - name: Enable pnpm via Corepack
         run: |
           corepack enable
           corepack prepare pnpm@9.0.0 --activate
+
+      - name: Setup pnpm global bin directory
+        run: |
+          export PNPM_HOME="/home/runner/.local/share/pnpm"
+          mkdir -p "$PNPM_HOME"
+          echo "PNPM_HOME=$PNPM_HOME" >> $GITHUB_ENV
+          echo "$PNPM_HOME" >> $GITHUB_PATH
+          pnpm setup
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -39,7 +50,7 @@ jobs:
         run: chmod +x src/cli.ts
 
       # ---------------------------------------------------------
-      # Install Salesforce CLI using pnpm (YES, this works)
+      # Install Salesforce CLI using pnpm (now works!)
       # ---------------------------------------------------------
       - name: Install Salesforce CLI (via pnpm)
         run: pnpm add -g @salesforce/cli
