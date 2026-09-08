@@ -28,20 +28,12 @@ jobs:
           node-version: '20'
 
       # ---------------------------------------------------------
-      # Enable pnpm and configure global bin directory
+      # pnpm for your project
       # ---------------------------------------------------------
       - name: Enable pnpm via Corepack
         run: |
           corepack enable
           corepack prepare pnpm@9.0.0 --activate
-
-      - name: Setup pnpm global bin directory
-        run: |
-          export PNPM_HOME="/home/runner/.local/share/pnpm"
-          mkdir -p "$PNPM_HOME"
-          echo "PNPM_HOME=$PNPM_HOME" >> $GITHUB_ENV
-          echo "$PNPM_HOME" >> $GITHUB_PATH
-          pnpm setup
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -50,10 +42,10 @@ jobs:
         run: chmod +x src/cli.ts
 
       # ---------------------------------------------------------
-      # Install Salesforce CLI using pnpm (now works!)
+      # npm for Salesforce CLI (required)
       # ---------------------------------------------------------
-      - name: Install Salesforce CLI (via pnpm)
-        run: pnpm add -g @salesforce/cli
+      - name: Install Salesforce CLI (npm)
+        run: npm install --global @salesforce/cli
 
       - name: Verify Salesforce CLI
         run: sf --version
@@ -62,7 +54,7 @@ jobs:
       # Install Salesforce Code Analyzer plugin
       # ---------------------------------------------------------
       - name: Install Salesforce Code Analyzer plugin
-        run: sf plugins install @salesforce/code-analyzer
+        run: sf plugins install code-analyzer
 
       - name: Verify Code Analyzer plugin
         run: sf plugins
