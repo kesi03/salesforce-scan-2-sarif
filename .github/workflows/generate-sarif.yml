@@ -19,45 +19,36 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # ---------------------------------------------------------
+      # Checkout your CLI tool
+      # ---------------------------------------------------------
       - name: Checkout this tool
         uses: actions/checkout@v4
 
+      # ---------------------------------------------------------
+      # Setup Node.js 22
+      # ---------------------------------------------------------
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22'
 
       # ---------------------------------------------------------
-      # pnpm for your project
+      # Enable pnpm
       # ---------------------------------------------------------
       - name: Enable pnpm via Corepack
         run: |
           corepack enable
           corepack prepare pnpm@9.0.0 --activate
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Make CLI executable
-        run: chmod +x src/cli.ts
-
       # ---------------------------------------------------------
-      # npm for Salesforce CLI (required)
+      # Install your CLI globally
       # ---------------------------------------------------------
-      - name: Install Salesforce CLI (npm)
-        run: npm install --global @salesforce/cli
+      - name: Install CLI globally
+        run: pnpm add -g @mockholm/sales-force-scan-2-sarif
 
-      - name: Verify Salesforce CLI
-        run: sf --version
-
-      # ---------------------------------------------------------
-      # Install Salesforce Code Analyzer plugin
-      # ---------------------------------------------------------
-      - name: Install Salesforce Code Analyzer plugin
-        run: sf plugins install code-analyzer
-
-      - name: Verify Code Analyzer plugin
-        run: sf plugins
+      - name: Verify CLI
+        run: sales-force-scan-2-sarif --help
 
       # ---------------------------------------------------------
       # Clone the Salesforce repo chosen by the user
@@ -66,10 +57,36 @@ jobs:
         run: git clone https://github.com/${{ inputs.repo }} repo-to-scan
 
       # ---------------------------------------------------------
-      # Run your CLI to scan and produce unified SARIF
+      # Discover PMD / ESLint / SARIF files
       # ---------------------------------------------------------
-      - name: Run Salesforce scan
-        run: pnpm exec sales-force-scan-2-sarif scan repo-to-scan/force-app sarif-output
+      - name: Discover files
+        run: sales-force-scan-2-sarif discover repo-to-scan > discovery.json
+
+      # ---------------------------------------------------------
+      # Convert PMD + ESLint → SARIF (if present)
+      # ---------------------------------------------------------
+      - name: Convert PMD + ESLint
+        run: |
+          mkdir -p sarif-output
+          sales-force-scan-2-sarif convert all repo-to-scan sarif-output || true
+
+      # ---------------------------------------------------------
+      # Merge PMD + ESLint SARIF → unified SARIF
+      # ---------------------------------------------------------
+      - name: Merge SARIF
+        run: sales-force-scan-2-sarif merge repo-to-scan sarif-output || true
+
+      # ---------------------------------------------------------
+      # Bundle all SARIF files into one
+      # ---------------------------------------------------------
+      - name: Bundle SARIF
+        run: sales-force-scan-2-sarif bundle sarif-output sarif-output/unified.sarif
+
+      # ---------------------------------------------------------
+      # Validate final SARIF
+      # ---------------------------------------------------------
+      - name: Validate SARIF
+        run: sales-force-scan-2-sarif validate sarif-output/unified.sarif
 
       # ---------------------------------------------------------
       # Upload SARIF artifact
@@ -78,4 +95,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: salesforce-scan-${{ inputs.repo }}
-          path: sarif-output/salesforce-unified.sarif
+          path: sarif-output/unified.sarif
