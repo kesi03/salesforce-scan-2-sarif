@@ -6,6 +6,7 @@
     "sales-force-scan-2-sarif": "./src/cli.ts"
   },
   "scripts": {
+    "build": "tsc",
     "dev": "tsx src/cli.ts",
     "start": "tsx src/cli.ts"
   },
