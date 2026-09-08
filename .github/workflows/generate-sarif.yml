@@ -27,7 +27,7 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Enable pnpm
+      - name: Enable pnpm via Corepack
         run: |
           corepack enable
           corepack prepare pnpm@9.0.0 --activate
@@ -35,14 +35,42 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Make CLI executable
+        run: chmod +x src/cli.ts
+
+      # ---------------------------------------------------------
+      # Install Salesforce CLI using pnpm (YES, this works)
+      # ---------------------------------------------------------
+      - name: Install Salesforce CLI (via pnpm)
+        run: pnpm add -g @salesforce/cli
+
+      - name: Verify Salesforce CLI
+        run: sf --version
+
+      # ---------------------------------------------------------
+      # Install Salesforce Code Analyzer plugin
+      # ---------------------------------------------------------
+      - name: Install Salesforce Code Analyzer plugin
+        run: sf plugins install @salesforce/code-analyzer
+
+      - name: Verify Code Analyzer plugin
+        run: sf plugins
+
+      # ---------------------------------------------------------
+      # Clone the Salesforce repo chosen by the user
+      # ---------------------------------------------------------
       - name: Clone Salesforce repo
-        run: |
-          git clone https://github.com/${{ inputs.repo }} repo-to-scan
+        run: git clone https://github.com/${{ inputs.repo }} repo-to-scan
 
+      # ---------------------------------------------------------
+      # Run your CLI to scan and produce unified SARIF
+      # ---------------------------------------------------------
       - name: Run Salesforce scan
-        run: |
-          pnpm exec sales-force-scan-2-sarif scan repo-to-scan/force-app sarif-output
+        run: pnpm exec sales-force-scan-2-sarif scan repo-to-scan/force-app sarif-output
 
+      # ---------------------------------------------------------
+      # Upload SARIF artifact
+      # ---------------------------------------------------------
       - name: Upload SARIF artifact
         uses: actions/upload-artifact@v4
         with:
