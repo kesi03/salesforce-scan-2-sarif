@@ -85,6 +85,21 @@ jobs:
             --target repo-to-scan \
             --output-file sarif-output/code-analyzer.sarif
 
+
+      # ---------------------------------------------------------
+      # Install Checov CLI
+      # ---------------------------------------------------------        
+      - name: Install Checov CLI
+        run: |
+          curl -sSL https://get.checov.com/install.sh | bash
+          checov --version
+
+      # ---------------------------------------------------------
+      # Run Checkov and write native SARIF output
+      # ---------------------------------------------------------
+      - name: Run Checkov
+        run: checkov -d repo-to-scan --output sarif-output --output-file checkov.sarif
+
       # ---------------------------------------------------------
       # Bundle all SARIF files into one
       # ---------------------------------------------------------
