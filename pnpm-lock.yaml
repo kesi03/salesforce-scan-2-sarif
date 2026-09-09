@@ -8,6 +8,13 @@ importers:
 
   .:
     dependencies:
+      xml2js:
+        specifier: ^0.6.2
+        version: 0.6.2
+      yargs:
+        specifier: ^17.7.2
+        version: 17.7.3
+    devDependencies:
       '@types/node':
         specifier: ^26.5.0
         version: 26.5.0
@@ -17,15 +24,8 @@ importers:
       '@types/yargs':
         specifier: ^17.0.35
         version: 17.0.35
-      xml2js:
-        specifier: ^0.6.2
-        version: 0.6.2
-      yargs:
-        specifier: ^17.7.2
-        version: 17.7.3
-    devDependencies:
       tsx:
-        specifier: ^4.7.0
+        specifier: ^4.23.13
         version: 4.23.13
       typescript:
         specifier: ^5.6.3
