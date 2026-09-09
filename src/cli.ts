@@ -11,8 +11,8 @@ import { mergeSarif } from "./converters/merge.js";
 import { writeSarifReport } from "./report.js";
 
 yargs(hideBin(process.argv))
-  .scriptName("sales-force-scan-2-sarif")
-  .usage("sales-force-scan-2-sarif <command> [options]")
+  .scriptName("sarif-tools")
+  .usage("sarif-tools <command> [options]")
 
   // ---------------------------------------------------------
   // convert pmd <input> <output>

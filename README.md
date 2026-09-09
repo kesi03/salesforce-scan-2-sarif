@@ -1,4 +1,4 @@
-# sales-force-scan-2-sarif
+# sarif-tools
 
 A modern, lightweight CLI for converting Salesforce static analysis outputs into **SARIF**, merging multiple SARIF files, validating SARIF, bundling SARIF, and auto‑discovering PMD/ESLint/SARIF files inside a project.
 
@@ -29,13 +29,13 @@ You provide the raw output files (PMD XML, ESLint JSON, or SARIF), and this tool
 Install globally:
 
 ```bash
-pnpm add -g sales-force-scan-2-sarif
+pnpm add -g @mockholm/sarif-tools
 ```
 
 Or use locally via `pnpm exec`:
 
 ```bash
-pnpm exec sales-force-scan-2-sarif <command>
+pnpm exec sarif-tools <command>
 ```
 
 ---
@@ -45,19 +45,19 @@ pnpm exec sales-force-scan-2-sarif <command>
 ### 🔧 Convert PMD XML → SARIF
 
 ```bash
-sales-force-scan-2-sarif convert pmd pmd.xml pmd.sarif
+sarif-tools convert pmd pmd.xml pmd.sarif
 ```
 
 ### 🔧 Convert ESLint JSON → SARIF
 
 ```bash
-sales-force-scan-2-sarif convert eslint eslint.json eslint.sarif
+sarif-tools convert eslint eslint.json eslint.sarif
 ```
 
 ### 🔧 Convert both automatically
 
 ```bash
-sales-force-scan-2-sarif convert all reports/ sarif/
+sarif-tools convert all reports/ sarif/
 ```
 
 This expects:
@@ -79,7 +79,7 @@ sarif/eslint.sarif
 ### 🔀 Merge PMD + ESLint SARIF
 
 ```bash
-sales-force-scan-2-sarif merge force-app reports/
+sarif-tools merge force-app reports/
 ```
 
 Produces:
@@ -93,7 +93,7 @@ reports/salesforce-unified.sarif
 ### 🔍 Discover PMD, ESLint, SARIF files
 
 ```bash
-sales-force-scan-2-sarif discover reports/
+sarif-tools discover reports/
 ```
 
 Example output:
@@ -114,7 +114,7 @@ Example output:
 ### 🧪 Validate SARIF
 
 ```bash
-sales-force-scan-2-sarif validate unified.sarif
+sarif-tools validate unified.sarif
 ```
 
 Checks for:
@@ -127,7 +127,7 @@ Checks for:
 ### 📚 Bundle multiple SARIF files
 
 ```bash
-sales-force-scan-2-sarif bundle sarif/ all.sarif
+sarif-tools bundle sarif/ all.sarif
 ```
 
 Bundles all `.sarif` files in a directory into one unified SARIF.
@@ -137,9 +137,9 @@ Bundles all `.sarif` files in a directory into one unified SARIF.
 ### 📄 Generate Markdown or HTML reports
 
 ```bash
-sales-force-scan-2-sarif report unified.sarif unified.md
-sales-force-scan-2-sarif report unified.sarif unified.html
-sales-force-scan-2-sarif report unified.sarif unified.junit.xml
+sarif-tools report unified.sarif unified.md
+sarif-tools report unified.sarif unified.html
+sarif-tools report unified.sarif unified.junit.xml
 ```
 
 Creates a human-readable findings report from a SARIF file. The output format is
@@ -170,10 +170,10 @@ Example workflow:
 
 ```yaml
 - name: Convert PMD + ESLint to SARIF
-  run: pnpm exec sales-force-scan-2-sarif convert all reports/ sarif/
+  run: pnpm exec sarif-tools convert all reports/ sarif/
 
 - name: Merge SARIF
-  run: pnpm exec sales-force-scan-2-sarif merge force-app sarif/
+  run: pnpm exec sarif-tools merge force-app sarif/
 ```
 
 Upload SARIF:
@@ -199,7 +199,7 @@ pnpm install
 Run CLI locally:
 
 ```bash
-pnpm exec sales-force-scan-2-sarif <command>
+pnpm exec sarif-tools <command>
 ```
 
 ---

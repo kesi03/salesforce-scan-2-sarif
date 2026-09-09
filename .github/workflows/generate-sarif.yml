@@ -1,4 +1,4 @@
-name: Generate Salesforce SARIF
+name: Generate SARIF Reports
 
 on:
   workflow_dispatch:
@@ -83,7 +83,7 @@ jobs:
       # Verify your CLI
       # ---------------------------------------------------------
       - name: Verify CLI
-        run: pnpm sfs2s --help
+        run: pnpm sarif-tools --help
 
       # ---------------------------------------------------------
       # Clone the Salesforce repo chosen by the user
@@ -119,13 +119,13 @@ jobs:
       # Bundle all SARIF files into one
       # ---------------------------------------------------------
       - name: Bundle SARIF
-        run: pnpm sfs2s bundle sarif-output sarif-output/unified.sarif
+        run: pnpm sarif-tools bundle sarif-output sarif-output/unified.sarif
 
       # ---------------------------------------------------------
       # Validate final SARIF
       # ---------------------------------------------------------
       - name: Validate SARIF
-        run: pnpm sfs2s validate sarif-output/unified.sarif
+        run: pnpm sarif-tools validate sarif-output/unified.sarif
 
       # ---------------------------------------------------------
       # Publish findings to GitHub Code Scanning
@@ -141,9 +141,9 @@ jobs:
       # ---------------------------------------------------------
       - name: Generate Markdown and HTML reports
         run: |
-          pnpm sfs2s report sarif-output/unified.sarif sarif-output/unified.md
-          pnpm sfs2s report sarif-output/unified.sarif sarif-output/unified.html
-          pnpm sfs2s report sarif-output/unified.sarif sarif-output/unified.junit.xml
+          pnpm sarif-tools report sarif-output/unified.sarif sarif-output/unified.md
+          pnpm sarif-tools report sarif-output/unified.sarif sarif-output/unified.html
+          pnpm sarif-tools report sarif-output/unified.sarif sarif-output/unified.junit.xml
 
       # ---------------------------------------------------------
       # Create a filesystem-safe artifact name
@@ -152,7 +152,7 @@ jobs:
         run: |
           safe_repo="${{ inputs.repo }}"
           safe_repo="${safe_repo//\//-}"
-          echo "ARTIFACT_NAME=salesforce-scan-${safe_repo}" >> "$GITHUB_ENV"
+          echo "ARTIFACT_NAME=sarif-tools-${safe_repo}" >> "$GITHUB_ENV"
 
       # ---------------------------------------------------------
       # Upload SARIF artifact
