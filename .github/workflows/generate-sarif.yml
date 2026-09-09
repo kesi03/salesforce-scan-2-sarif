@@ -104,7 +104,12 @@ jobs:
       # Run Checkov and write native SARIF output
       # ---------------------------------------------------------
       - name: Run Checkov
-        run: checkov -d repo-to-scan --output sarif-output --output-file checkov.sarif
+        run: |
+          mkdir -p sarif-output
+          checkov \
+            -d repo-to-scan \
+            --output sarif \
+            --output-file-path sarif-output/checkov.sarif
 
       # ---------------------------------------------------------
       # Bundle all SARIF files into one
