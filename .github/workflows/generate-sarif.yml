@@ -50,6 +50,15 @@ jobs:
           pnpm config set global-bin-dir "$PNPM_HOME"
 
       # ---------------------------------------------------------
+      # Fix npm global directory permissions (CRITICAL)
+      # ---------------------------------------------------------
+      - name: Fix npm global directory permissions
+        run: |
+          mkdir -p ~/.npm-global
+          npm config set prefix '~/.npm-global'
+          echo "$HOME/.npm-global/bin" >> $GITHUB_PATH
+
+      # ---------------------------------------------------------
       # Install Salesforce CLI
       # ---------------------------------------------------------
       - name: Install Salesforce CLI (pnpm)
@@ -59,7 +68,13 @@ jobs:
         run: sf --version
 
       # ---------------------------------------------------------
-      # Install Salesforce Code Analyzer plugin (correct name)
+      # Configure Salesforce CLI plugin registry (CRITICAL)
+      # ---------------------------------------------------------
+      - name: Configure Salesforce CLI plugin registry
+        run: sf config set plugins.registry=https://developer.salesforce.com/tools/salesforcecli
+
+      # ---------------------------------------------------------
+      # Install Salesforce Code Analyzer plugin
       # ---------------------------------------------------------
       - name: Install Salesforce Code Analyzer plugin
         run: sf plugins install @salesforce/code-analyzer
