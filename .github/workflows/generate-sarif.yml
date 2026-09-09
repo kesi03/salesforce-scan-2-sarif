@@ -141,6 +141,7 @@ jobs:
             --source repo-to-scan \
             --report-format sarif \
             --report-path sarif-output/gitleaks.sarif \
+            --exit-code 0 \
             --no-banner
 
       # ---------------------------------------------------------
