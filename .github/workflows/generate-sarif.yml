@@ -126,6 +126,7 @@ jobs:
             | head -n 1)"
           curl -fsSL "$download_url" -o /tmp/gitleaks.tar.gz
           tar -xzf /tmp/gitleaks.tar.gz -C /tmp gitleaks
+          mkdir -p "$HOME/.local/bin"
           install -m 0755 /tmp/gitleaks "$HOME/.local/bin/gitleaks"
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
           gitleaks version
