@@ -17,6 +17,9 @@ on:
 jobs:
   scan:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
 
     steps:
       # ---------------------------------------------------------
@@ -125,6 +128,23 @@ jobs:
         run: pnpm sfs2s validate sarif-output/unified.sarif
 
       # ---------------------------------------------------------
+      # Publish findings to GitHub Code Scanning
+      # ---------------------------------------------------------
+      - name: Upload SARIF to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: sarif-output/unified.sarif
+          category: salesforce-${{ inputs.repo }}
+
+      # ---------------------------------------------------------
+      # Generate human-readable reports
+      # ---------------------------------------------------------
+      - name: Generate Markdown and HTML reports
+        run: |
+          pnpm sfs2s report sarif-output/unified.sarif sarif-output/unified.md
+          pnpm sfs2s report sarif-output/unified.sarif sarif-output/unified.html
+
+      # ---------------------------------------------------------
       # Create a filesystem-safe artifact name
       # ---------------------------------------------------------
       - name: Prepare artifact name
@@ -140,4 +160,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.ARTIFACT_NAME }}
-          path: sarif-output/unified.sarif
+          path: |
+            sarif-output/unified.sarif
+            sarif-output/unified.md
+            sarif-output/unified.html

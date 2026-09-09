@@ -8,6 +8,7 @@ import path from "path";
 import { convertPMD } from "./converters/pmd.js";
 import { convertESLint } from "./converters/eslint.js";
 import { mergeSarif } from "./converters/merge.js";
+import { writeSarifReport } from "./report.js";
 
 yargs(hideBin(process.argv))
   .scriptName("sales-force-scan-2-sarif")
@@ -233,6 +234,43 @@ yargs(hideBin(process.argv))
 
       fs.writeFileSync(outfile, JSON.stringify(bundled, null, 2));
       console.log(`Bundled SARIF written to ${outfile}`);
+    }
+  )
+
+  // ---------------------------------------------------------
+  // report <sarif> <output>
+  // ---------------------------------------------------------
+  .command(
+    "report <sarif> <output>",
+    "Convert SARIF to Markdown or HTML",
+    y =>
+      y
+        .positional("sarif", {
+          type: "string",
+          describe: "Path to SARIF file",
+          demandOption: true
+        })
+        .positional("output", {
+          type: "string",
+          describe: "Output .md or .html report",
+          demandOption: true
+        }),
+    argv => {
+      const sarifPath = argv.sarif as string;
+      const outputPath = argv.output as string;
+
+      if (!fs.existsSync(sarifPath)) {
+        console.error(`File not found: ${sarifPath}`);
+        process.exit(1);
+      }
+
+      try {
+        writeSarifReport(sarifPath, outputPath);
+        console.log(`SARIF report written to ${outputPath}`);
+      } catch (err: any) {
+        console.error(`SARIF report generation failed: ${err.message}`);
+        process.exit(1);
+      }
     }
   )
 

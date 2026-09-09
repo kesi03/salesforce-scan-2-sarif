@@ -134,6 +134,18 @@ Bundles all `.sarif` files in a directory into one unified SARIF.
 
 ---
 
+### 📄 Generate Markdown or HTML reports
+
+```bash
+sales-force-scan-2-sarif report unified.sarif unified.md
+sales-force-scan-2-sarif report unified.sarif unified.html
+```
+
+Creates a human-readable findings report from a SARIF file. The output format is
+selected from the `.md` or `.html` extension.
+
+---
+
 ## 🏗 Directory Structure
 
 Typical usage:
