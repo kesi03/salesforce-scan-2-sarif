@@ -98,10 +98,19 @@ jobs:
         run: pnpm sfs2s validate sarif-output/unified.sarif
 
       # ---------------------------------------------------------
+      # Create a filesystem-safe artifact name
+      # ---------------------------------------------------------
+      - name: Prepare artifact name
+        run: |
+          safe_repo="${{ inputs.repo }}"
+          safe_repo="${safe_repo//\//-}"
+          echo "ARTIFACT_NAME=salesforce-scan-${safe_repo}" >> "$GITHUB_ENV"
+
+      # ---------------------------------------------------------
       # Upload SARIF artifact
       # ---------------------------------------------------------
       - name: Upload SARIF artifact
         uses: actions/upload-artifact@v4
         with:
-          name: salesforce-scan-${{ inputs.repo }}
+          name: ${{ env.ARTIFACT_NAME }}
           path: sarif-output/unified.sarif
