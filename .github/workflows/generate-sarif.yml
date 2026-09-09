@@ -71,7 +71,7 @@ jobs:
       # Configure Salesforce CLI plugin registry (CRITICAL)
       # ---------------------------------------------------------
       - name: Configure Salesforce CLI plugin registry
-        run: sf config set plugins.registry=https://developer.salesforce.com/tools/salesforcecli
+        run: sf config set plugins.registry=https://developer.salesforce.com/tools/salesforcecli --global
 
       # ---------------------------------------------------------
       # Install Salesforce Code Analyzer plugin
