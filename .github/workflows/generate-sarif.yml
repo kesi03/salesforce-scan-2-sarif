@@ -116,6 +116,28 @@ jobs:
             --soft-fail
 
       # ---------------------------------------------------------
+      # Install Gitleaks and run it to generate SARIF output
+      # ---------------------------------------------------------
+      - name: Install Gitleaks (bash)
+        run: |
+          curl -sSL https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks-linux-amd64 \
+            -o /usr/local/bin/gitleaks
+          chmod +x /usr/local/bin/gitleaks
+          gitleaks version
+
+      #---------------------------------------------------------
+      # Run Gitleaks and generate SARIF output
+      #---------------------------------------------------------  
+      - name: Run Gitleaks and generate SARIF
+        run: |
+          mkdir -p sarif-output
+          gitleaks detect \
+            --source . \
+            --report-format sarif \
+            --report-path sarif-output/gitleaks.sarif \
+            --no-banner
+
+      # ---------------------------------------------------------
       # Bundle all SARIF files into one
       # ---------------------------------------------------------
       - name: Bundle SARIF
