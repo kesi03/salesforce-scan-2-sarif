@@ -34,29 +34,13 @@ jobs:
           node-version: '22'
 
       # ---------------------------------------------------------
-      # Enable pnpm
+      # Enable pnpm and install this CLI
       # ---------------------------------------------------------
       - name: Enable pnpm via Corepack
         run: |
           corepack enable
           corepack prepare pnpm@9.0.0 --activate
-
-      - name: Setup PNPM_HOME (deterministic)
-        run: |
-          export PNPM_HOME="$HOME/.pnpm"
-          mkdir -p "$PNPM_HOME"
-          echo "PNPM_HOME=$PNPM_HOME" >> $GITHUB_ENV
-          echo "$PNPM_HOME" >> $GITHUB_PATH
-          pnpm config set global-bin-dir "$PNPM_HOME"
-
-      # ---------------------------------------------------------
-      # Fix npm global directory permissions (CRITICAL)
-      # ---------------------------------------------------------
-      - name: Fix npm global directory permissions
-        run: |
-          mkdir -p ~/.npm-global
-          npm config set prefix '~/.npm-global'
-          echo "$HOME/.npm-global/bin" >> $GITHUB_PATH
+          pnpm install --frozen-lockfile
 
       # ---------------------------------------------------------
       # Install Salesforce CLI
@@ -68,19 +52,10 @@ jobs:
         run: sf --version
 
       # ---------------------------------------------------------
-      # Configure Salesforce CLI plugin registry (CRITICAL)
+      # Verify Salesforce Code Analyzer
       # ---------------------------------------------------------
-      - name: Configure Salesforce CLI plugin registry
-        run: sf config set plugins.registry=https://developer.salesforce.com/tools/salesforcecli --global
-
-      # ---------------------------------------------------------
-      # Install Salesforce Code Analyzer plugin
-      # ---------------------------------------------------------
-      - name: Install Salesforce Code Analyzer plugin
-        run: sf plugins install @salesforce/code-analyzer
-
-      - name: Verify Code Analyzer plugin
-        run: sf plugins
+      - name: Verify Code Analyzer
+        run: sf code-analyzer --help
 
       # ---------------------------------------------------------
       # Verify your CLI
@@ -95,24 +70,15 @@ jobs:
         run: git clone https://github.com/${{ inputs.repo }} repo-to-scan
 
       # ---------------------------------------------------------
-      # Discover PMD / ESLint / SARIF files
+      # Run Salesforce Code Analyzer and write native SARIF output
       # ---------------------------------------------------------
-      - name: Discover files
-        run: pnpm sfs2s discover repo-to-scan > discovery.json
-
-      # ---------------------------------------------------------
-      # Convert PMD + ESLint → SARIF
-      # ---------------------------------------------------------
-      - name: Convert PMD + ESLint
+      - name: Analyze Salesforce repo
         run: |
           mkdir -p sarif-output
-          pnpm sfs2s convert all repo-to-scan sarif-output || true
-
-      # ---------------------------------------------------------
-      # Merge PMD + ESLint SARIF → unified SARIF
-      # ---------------------------------------------------------
-      - name: Merge SARIF
-        run: pnpm sfs2s merge repo-to-scan sarif-output || true
+          sf code-analyzer run \
+            --workspace repo-to-scan \
+            --target repo-to-scan \
+            --output-file sarif-output/code-analyzer.sarif
 
       # ---------------------------------------------------------
       # Bundle all SARIF files into one
