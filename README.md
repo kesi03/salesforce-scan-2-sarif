@@ -139,10 +139,12 @@ Bundles all `.sarif` files in a directory into one unified SARIF.
 ```bash
 sales-force-scan-2-sarif report unified.sarif unified.md
 sales-force-scan-2-sarif report unified.sarif unified.html
+sales-force-scan-2-sarif report unified.sarif unified.junit.xml
 ```
 
 Creates a human-readable findings report from a SARIF file. The output format is
-selected from the `.md` or `.html` extension.
+selected from the `.md`, `.html`, or `.xml` extension. JUnit XML output
+represents each SARIF finding as a failed test case for CI test-reporting tools.
 
 ---
 

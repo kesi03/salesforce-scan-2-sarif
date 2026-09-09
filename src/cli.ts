@@ -242,7 +242,7 @@ yargs(hideBin(process.argv))
   // ---------------------------------------------------------
   .command(
     "report <sarif> <output>",
-    "Convert SARIF to Markdown or HTML",
+    "Convert SARIF to Markdown, HTML, or JUnit XML",
     y =>
       y
         .positional("sarif", {
@@ -252,7 +252,7 @@ yargs(hideBin(process.argv))
         })
         .positional("output", {
           type: "string",
-          describe: "Output .md or .html report",
+          describe: "Output .md, .html, or .xml report",
           demandOption: true
         }),
     argv => {

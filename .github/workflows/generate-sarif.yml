@@ -143,6 +143,7 @@ jobs:
         run: |
           pnpm sfs2s report sarif-output/unified.sarif sarif-output/unified.md
           pnpm sfs2s report sarif-output/unified.sarif sarif-output/unified.html
+          pnpm sfs2s report sarif-output/unified.sarif sarif-output/unified.junit.xml
 
       # ---------------------------------------------------------
       # Create a filesystem-safe artifact name
@@ -164,3 +165,4 @@ jobs:
             sarif-output/unified.sarif
             sarif-output/unified.md
             sarif-output/unified.html
+            sarif-output/unified.junit.xml

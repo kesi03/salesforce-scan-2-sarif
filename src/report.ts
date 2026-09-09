@@ -36,6 +36,16 @@ function escapeHtml(value: string): string {
     .replaceAll("\n", " ");
 }
 
+function escapeXml(value: string): string {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&apos;")
+    .replaceAll("\n", " ");
+}
+
 function resultLocation(result: SarifResult): string {
   const location = result.locations?.[0]?.physicalLocation;
   const uri = location?.artifactLocation?.uri || "unknown";
@@ -117,16 +127,35 @@ ${tableRows}
 `;
 }
 
+function toJUnit(rows: ReturnType<typeof resultRows>): string {
+  const testCases = rows
+    .map(
+      row => `    <testcase classname="${escapeXml(row.tool)}" name="${escapeXml(`${row.rule} - ${row.location}`)}">
+      <failure message="${escapeXml(row.message)}" type="${escapeXml(row.level)}">${escapeXml(`${row.location}: ${row.message}`)}</failure>
+    </testcase>`
+    )
+    .join("\n");
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="SARIF Report" tests="${rows.length}" failures="${rows.length}" errors="0" skipped="0">
+  <testsuite name="SARIF findings" tests="${rows.length}" failures="${rows.length}" errors="0" skipped="0">
+${testCases}
+  </testsuite>
+</testsuites>
+`;
+}
+
 export function writeSarifReport(inputFile: string, outputFile: string): void {
   const document = JSON.parse(fs.readFileSync(inputFile, "utf8")) as SarifDocument;
   const rows = resultRows(document);
   const extension = path.extname(outputFile).toLowerCase();
 
-  if (extension !== ".md" && extension !== ".html") {
-    throw new Error("Report output must use a .md or .html extension");
+  const isJUnit = extension === ".xml" || outputFile.toLowerCase().endsWith(".junit.xml");
+  if (extension !== ".md" && extension !== ".html" && !isJUnit) {
+    throw new Error("Report output must use a .md, .html, or .xml extension");
   }
 
-  const content = extension === ".md" ? toMarkdown(rows) : toHtml(rows);
+  const content = extension === ".md" ? toMarkdown(rows) : extension === ".html" ? toHtml(rows) : toJUnit(rows);
   fs.mkdirSync(path.dirname(outputFile), { recursive: true });
   fs.writeFileSync(outputFile, content);
 }
