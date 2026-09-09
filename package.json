@@ -3,7 +3,7 @@
   "version": "0.0.2",
   "type": "module",
   "bin": {
-    "sales-force-scan-2-sarif": "./src/cli.ts"
+    "sfs2s": "./src/cli.ts"
   },
   "scripts": {
     "build": "tsc",
