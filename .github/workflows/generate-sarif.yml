@@ -109,7 +109,7 @@ jobs:
           checkov \
             -d repo-to-scan \
             --output sarif \
-            --output-file-path sarif-output/checkov.sarif \
+            --output-file-path sarif-output \
             --soft-fail
 
       # ---------------------------------------------------------
