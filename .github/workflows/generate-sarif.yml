@@ -101,14 +101,6 @@ jobs:
 
 
       # ---------------------------------------------------------
-      # Install Checov CLI
-      # ---------------------------------------------------------        
-      - name: Install Checov CLI
-        run: |
-          curl -sSL https://get.checov.com/install.sh | bash
-          checov --version
-
-      # ---------------------------------------------------------
       # Run Checkov and write native SARIF output
       # ---------------------------------------------------------
       - name: Run Checkov
