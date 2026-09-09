@@ -109,7 +109,8 @@ jobs:
           checkov \
             -d repo-to-scan \
             --output sarif \
-            --output-file-path sarif-output/checkov.sarif
+            --output-file-path sarif-output/checkov.sarif \
+            --soft-fail
 
       # ---------------------------------------------------------
       # Bundle all SARIF files into one
