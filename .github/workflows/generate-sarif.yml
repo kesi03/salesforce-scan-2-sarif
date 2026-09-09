@@ -50,7 +50,7 @@ jobs:
           pnpm config set global-bin-dir "$PNPM_HOME"
 
       # ---------------------------------------------------------
-      # npm for Salesforce CLI (required)
+      # Install Salesforce CLI
       # ---------------------------------------------------------
       - name: Install Salesforce CLI (pnpm)
         run: pnpm add -g @salesforce/cli
@@ -59,25 +59,19 @@ jobs:
         run: sf --version
 
       # ---------------------------------------------------------
-      # Install Salesforce Code Analyzer plugin
+      # Install Salesforce Code Analyzer plugin (correct name)
       # ---------------------------------------------------------
       - name: Install Salesforce Code Analyzer plugin
-        run: sf plugins install code-analyzer
+        run: sf plugins install @salesforce/code-analyzer
 
       - name: Verify Code Analyzer plugin
         run: sf plugins
 
-
       # ---------------------------------------------------------
-      # Install your CLI globally
+      # Verify your CLI
       # ---------------------------------------------------------
-      - name: Install CLI globally
-        run: pnpm add -g @mockholm/sales-force-scan-2-sarif
-
       - name: Verify CLI
-        run: sales-force-scan-2-sarif --help
-
-      
+        run: pnpm sfs2s --help
 
       # ---------------------------------------------------------
       # Clone the Salesforce repo chosen by the user
@@ -89,33 +83,33 @@ jobs:
       # Discover PMD / ESLint / SARIF files
       # ---------------------------------------------------------
       - name: Discover files
-        run: sales-force-scan-2-sarif discover repo-to-scan > discovery.json
+        run: pnpm sfs2s discover repo-to-scan > discovery.json
 
       # ---------------------------------------------------------
-      # Convert PMD + ESLint → SARIF (if present)
+      # Convert PMD + ESLint → SARIF
       # ---------------------------------------------------------
       - name: Convert PMD + ESLint
         run: |
           mkdir -p sarif-output
-          sales-force-scan-2-sarif convert all repo-to-scan sarif-output || true
+          pnpm sfs2s convert all repo-to-scan sarif-output || true
 
       # ---------------------------------------------------------
       # Merge PMD + ESLint SARIF → unified SARIF
       # ---------------------------------------------------------
       - name: Merge SARIF
-        run: sales-force-scan-2-sarif merge repo-to-scan sarif-output || true
+        run: pnpm sfs2s merge repo-to-scan sarif-output || true
 
       # ---------------------------------------------------------
       # Bundle all SARIF files into one
       # ---------------------------------------------------------
       - name: Bundle SARIF
-        run: sales-force-scan-2-sarif bundle sarif-output sarif-output/unified.sarif
+        run: pnpm sfs2s bundle sarif-output sarif-output/unified.sarif
 
       # ---------------------------------------------------------
       # Validate final SARIF
       # ---------------------------------------------------------
       - name: Validate SARIF
-        run: sales-force-scan-2-sarif validate sarif-output/unified.sarif
+        run: pnpm sfs2s validate sarif-output/unified.sarif
 
       # ---------------------------------------------------------
       # Upload SARIF artifact
